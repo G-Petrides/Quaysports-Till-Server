@@ -281,7 +281,6 @@ export const rewardCard = async (query, barcode) => {
 
 export const updateRewardCard = async (card) => {
     if (!card.id || card.id === "") return
-
     if (card.id.startsWith("QSGIFT")) {
         if (!card.amount) {
             card.active = false
@@ -290,7 +289,6 @@ export const updateRewardCard = async (card) => {
             card.active = true
         }
         if (card._id) delete card._id
-
         return await mongoI.setData("Shop-Giftcard", {id: card.id}, card)
     }
 }

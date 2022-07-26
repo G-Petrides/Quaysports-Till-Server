@@ -1,6 +1,6 @@
 import mongoI = require('../mongo-interface/mongo-interface');
 
 export const auth = async (code: string) => {
-    return await mongoI.findOne("Users", {pin: {$eq: code}})
+    return await mongoI.findOne("Users", {pin: {$eq: code}}, {username:1, role:1})
 }
 

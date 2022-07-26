@@ -4,7 +4,7 @@ import https = require('https');
 
 import mongoI = require('./server-modules/mongo-interface/mongo-interface')
 import {auth} from "./server-modules/linn-api/linn-auth";
-const config = require("./Config/config.json")
+const config = require("./config/config.json")
 
 import {NextFunction, Request, Response} from "express";
 
@@ -12,8 +12,8 @@ const app = express();
 app.all('*', ensureSecure)
 app.disable('x-powered-by')
 
-const privateKey = fs.readFileSync('../config/ucc.key', 'utf8');
-const certificate = fs.readFileSync('../config/ucc.crt', 'utf8');
+const privateKey = fs.readFileSync('./config/ucc.key', 'utf8');
+const certificate = fs.readFileSync('./config/ucc.crt', 'utf8');
 const credentials = {key: privateKey, cert: certificate};
 
 const server = https.createServer(credentials, app);

@@ -1,6 +1,6 @@
 "use strict";
 import mongoDB = require('mongodb');
-import config = require('../../Config/config.json');
+import config = require('../../config/config.json');
 
 export const connect = async () => {
     return await new mongoDB.MongoClient(config.dbURL).connect()

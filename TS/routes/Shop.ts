@@ -23,7 +23,6 @@ router.post('/RewardCard', async (req, res) => {
     res.send(await shop.rewardCard(req.body.QUERY, req.body.QUERY.id.$eq));
 })
 
-//TODO: here one down, reward card not deleting _id for some reason
 router.post('/UpdateRewardCard', async (req, res) => {
     res.set('Content-Type', 'application/json');
     res.send(await shop.updateRewardCard(req.body));
@@ -46,7 +45,7 @@ router.post('/Postcodes', async (req, res) => {
 
 router.post('/Orders', async (req, res) => {
     res.set('Content-Type', 'application/json');
-    res.send(shop.orders(req.body.QUERY));
+    res.send(await shop.orders(req.body.QUERY));
 })
 
 router.post('/LastFiftyOrders', async (req, res) => {

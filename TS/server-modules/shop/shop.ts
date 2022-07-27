@@ -14,8 +14,7 @@ export const count = async () => {
 export const update = async (order, loc = "Shop") => {
     if (order._id !== undefined) delete order._id
     if (order.paid === 'true') await linnOrder(order, loc)
-    await mongoI.setData("Shop", {id: order.id}, order)
-    return
+    return await mongoI.setData("Shop", {id: order.id}, order)
 }
 
 export const linnOrder = async (order, loc) => {

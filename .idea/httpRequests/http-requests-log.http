@@ -1,3 +1,23 @@
+POST https://192.168.1.200:4430/Shop/CashUp
+Content-Type: application/json
+token: 75e0b3b2-7530-11ec-90d6-0242ac120003
+
+{}
+
+<> 2022-08-10T133823.200.json
+
+###
+
+POST https://192.168.1.200:4430/Shop/CashUp
+Content-Type: application/json
+token: 75e0b3b2-7530-11ec-90d6-0242ac120003
+
+{}
+
+<> 2022-08-10T133723.403.txt
+
+###
+
 POST https://localhost/Shop/CashUp
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003

@@ -53,7 +53,7 @@ const startSever = async () => {
     //  apply to all requests
     app.use(limiter);
 
-    const allowedOrigins = ["https://192.168.1.200", "https://localhost"];
+    const allowedOrigins = ["https://192.168.1.200:4430"];
     app.use(function (req, res, next) {
         const origin = "https://" + req.headers.host;
         if (allowedOrigins.includes(origin)) {

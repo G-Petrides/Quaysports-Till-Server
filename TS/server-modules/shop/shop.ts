@@ -25,7 +25,7 @@ export const get = async (query: object) => {
 }
 
 export const count = async () => {
-    let result = await mongoI.findOne<tillServer.order>("Shop", {}, {}, {_id: 1}, 1)
+    let result = await mongoI.findOne<tillServer.order>("Shop", {}, {}, {_id: -1}, 1)
     return result ? Number(result.id.substring(6, result.id.length)) + 1 : 1;
 }
 

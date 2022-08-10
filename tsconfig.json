@@ -6,7 +6,7 @@
     "sourceMap": false,
     "rootDir": "./TS",
     "outDir": "./Server",
-    "strict": false,
+    "strict": true,
     "resolveJsonModule": true
   },
   "exclude": [

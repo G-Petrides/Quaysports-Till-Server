@@ -160,7 +160,7 @@ export const getOrder = async (id: string) => {
 export const adjustStock = async (arr: any, id: string) => {
     return await postReq(
         '/api/Stock/UpdateStockLevelsBySKU',
-        `stockLevels=${JSON.stringify(arr)}&changeSource=Shop StockIn - ${id}`
+        `stockLevels=${JSON.stringify(arr)}&changeSource=${id}`
     )
 }
 export const createRma = async (arr: any) => {

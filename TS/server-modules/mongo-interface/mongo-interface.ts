@@ -37,7 +37,7 @@ export const find = async <T>(collection:string, filter = {}, projection = {}, s
     const client = await connect()
     try {
         const db = client.db(config.dbName);
-        return await (db.collection(collection).find(filter).project(projection).limit(limit).sort(sort).toArray()) as T[]
+        return await (db.collection(collection).find<T>(filter).project(projection).limit(limit).sort(sort).toArray())
     } catch (e) {
         console.error(e)
     } finally {
@@ -45,11 +45,11 @@ export const find = async <T>(collection:string, filter = {}, projection = {}, s
     }
 }
 
-export const findOne = async (collection:string, filter = {}, projection = {}, sort = {}, limit = 10000)=> {
+export const findOne = async <T>(collection:string, filter = {}, projection = {}, sort = {}, limit = 10000)=> {
     const client = await connect()
     try {
         const db = client.db(config.dbName);
-        return await db.collection(collection).findOne(filter, {projection: projection, sort:sort, limit:limit})
+        return await db.collection(collection).findOne<T>(filter, {projection: projection, sort:sort, limit:limit})
     } catch (e) {
         console.error(e)
     } finally {

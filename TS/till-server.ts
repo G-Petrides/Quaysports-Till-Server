@@ -17,7 +17,7 @@ const certificate = fs.readFileSync('./config/ucc.crt', 'utf8');
 const credentials = {key: privateKey, cert: certificate};
 
 const server = https.createServer(credentials, app);
-server.listen(443, async () => {
+server.listen(4430, async () => {
     console.log(`HTTPS server listening`)
     await startSever()
     console.log(`Server started`)
@@ -53,7 +53,7 @@ const startSever = async () => {
     //  apply to all requests
     app.use(limiter);
 
-    const allowedOrigins = ["https://141.195.190.47", "https://192.168.1.200", "https://192.168.1.205", "https://192.168.1.120", "https://localhost"];
+    const allowedOrigins = ["https://192.168.1.200", "https://localhost"];
     app.use(function (req, res, next) {
         const origin = "https://" + req.headers.host;
         if (allowedOrigins.includes(origin)) {

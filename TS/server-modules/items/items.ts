@@ -1,7 +1,13 @@
 import mongoI = require('../mongo-interface/mongo-interface')
 
-export const getImages = async (sku, type) => {
-    const item = await mongoI.findOne("Items", {SKU: sku}, {IMAGES: 1})
+export const getImages = async (sku:string, type:string) => {
+    interface itemImageDetails {
+        _id:string,
+        IMAGES:{
+            [key:string]:{link:string, filename:string}
+        }
+    }
+    const item = await mongoI.findOne<itemImageDetails>("Items", {SKU: sku}, {IMAGES: 1})
     if (!item) return
     if (!item.IMAGES) return
     if (type) {

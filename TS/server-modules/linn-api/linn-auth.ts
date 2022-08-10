@@ -44,9 +44,15 @@ const connectToLinnworksAndGetAuth = () => {
 }
 
 const getLinnworksAuthDetailsFromDB = async () => {
-    const result = await mongoI.findOne("Server", {id: "Linnworks"})
-    console.dir(result.details)
-    connectionDetails = result.details
+    interface linnworksDetails {
+        _id?:string,
+        details:{
+            server:string,
+            token:string
+        }
+    }
+    const result = await mongoI.findOne<linnworksDetails>("Server", {id: "Linnworks"})
+    connectionDetails = result!.details
     return
 }
 

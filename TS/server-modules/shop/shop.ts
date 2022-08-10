@@ -1,28 +1,46 @@
 import mongoI = require('../mongo-interface/mongo-interface');
 import linn = require("../linn-api/linn-api");
-import core = require('../core/core');
+import {tillServer} from "../../index";
 
-export const get = async (query) => {
-    return await mongoI.find<any>("Shop", query)
+interface item {
+    SKU: string,
+    LINNID?: string,
+    EAN?: string,
+    TITLE?: string,
+    QSPRICEINCVAT?: string,
+    SHOPPRICEINCVAT?: number,
+    PURCHASEPRICE?: number,
+    STOCKTOTAL?: number
+}
+
+interface giftCard {
+    _id?: string,
+    id: string,
+    active: boolean,
+    amount?: number
+}
+
+export const get = async (query: object) => {
+    return await mongoI.find<tillServer.order>("Shop", query)
 }
 
 export const count = async () => {
-    let result = await mongoI.findOne("Shop", {}, {}, {_id: 1}, 1)
+    let result = await mongoI.findOne<tillServer.order>("Shop", {}, {}, {_id: 1}, 1)
     return result ? Number(result.id.substring(6, result.id.length)) + 1 : 1;
 }
 
-export const update = async (order, loc = "Shop") => {
+export const update = async (order: tillServer.order, loc = "Shop") => {
     if (order._id !== undefined) delete order._id
     if (order.paid === 'true') await linnOrder(order, loc)
     return await mongoI.setData("Shop", {id: order.id}, order)
 }
 
-export const linnOrder = async (order, loc) => {
+export const linnOrder = async (order: tillServer.order, loc = "Default") => {
 
-    const linnLocation = {
-        Default: "00000000-0000-0000-0000-000000000000",
-        Shop: "bcee8b08-5fc5-4694-9400-4d489d977186"
-    }
+    const linnLocation = new Map([
+        ["Default", "00000000-0000-0000-0000-000000000000"],
+        ["Shop", "bcee8b08-5fc5-4694-9400-4d489d977186"]
+    ])
     let date = new Date()
 
     let itemsCheck = false
@@ -38,7 +56,7 @@ export const linnOrder = async (order, loc) => {
         for (let item of order.order) {
             if (item.LINNID && item.LINNID !== "") {
                 let details = {"PricePerUnit": item.PRICE, "TaxInclusive": true}
-                let string = `orderId=${newOrder.OrderId}&itemId=${item.LINNID}&channelSKU=${item.SKU}&fulfilmentCenter=${linnLocation[loc]}&quantity=${item.QTY}&linePricing=${JSON.stringify(details)}`
+                let string = `orderId=${newOrder.OrderId}&itemId=${item.LINNID}&channelSKU=${item.SKU}&fulfilmentCenter=${linnLocation.get(loc)}&quantity=${item.QTY}&linePricing=${JSON.stringify(details)}`
                 await linn.addItemToOrder(string)
             }
         }
@@ -57,28 +75,28 @@ export const linnOrder = async (order, loc) => {
             Address: {
                 FullName: order.id,
                 Company: "",
-                Address1: order.address.number ? order.address.number : "Unit 13",
+                Address1: order.address?.number ? order.address.number : "Unit 13",
                 Address2: "",
                 Address3: "",
                 Town: "",
                 Region: "",
-                PostCode: order.address.postcode ? order.address.postcode : "EX31 3NJ",
+                PostCode: order.address?.postcode ? order.address.postcode : "EX31 3NJ",
                 Country: "United Kingdom",
-                PhoneNumber: order.address.phone ? order.address.phone : "",
-                EmailAddress: order.address.email ? order.address.email : ""
+                PhoneNumber: order.address?.phone ? order.address.phone : "",
+                EmailAddress: order.address?.email ? order.address.email : ""
             },
             BillingAddress: {
                 FullName: order.id,
                 Company: "",
-                Address1: order.address.number ? order.address.number : "Unit 13",
+                Address1: order.address?.number ? order.address.number : "Unit 13",
                 Address2: "",
                 Address3: "",
                 Town: "",
                 Region: "",
-                PostCode: order.address.postcode ? order.address.postcode : "EX31 3NJ",
+                PostCode: order.address?.postcode ? order.address.postcode : "EX31 3NJ",
                 Country: "United Kingdom",
-                PhoneNumber: order.address.phone ? order.address.phone : "",
-                EmailAddress: order.address.email ? order.address.email : ""
+                PhoneNumber: order.address?.phone ? order.address.phone : "",
+                EmailAddress: order.address?.email ? order.address.email : ""
             }
         }
         await linn.setOrderCustomerInfo(`orderId=${newOrder.OrderId}&info=${JSON.stringify(addressInfo)}&saveToCrm=false`)
@@ -104,7 +122,7 @@ export const linnOrder = async (order, loc) => {
             "SubSource": "Quaysports",
             "DespatchByDate": date,
             "HasScheduledDelivery": false,
-            "Location": linnLocation[loc],
+            "Location": linnLocation.get(loc),
         }
         await linn.setOrderGeneralInfo(`orderId=${newOrder.OrderId}&info=${JSON.stringify(generalInfo)}&wasDraft=false`)
 
@@ -125,24 +143,26 @@ export const linnOrder = async (order, loc) => {
     }
 }
 
-export const postcodes = async (id) => {
+export const postcodes = async (id: string) => {
 
-    const result = await mongoI.find<any>("Shop", {"address.postcode": {$regex: id, $options: "i"}},
+    const result = await mongoI.find<tillServer.order>("Shop", {"address.postcode": {$regex: id, $options: "i"}},
         {address: 1})
 
-    let combine = []
-    for (let v of result) {
-        let pos = core.getPos(combine, "postcode", v.address.postcode)
-        if (pos === -1) {
-            combine.push({postcode: v.address.postcode, numbers: [v.address.number]})
-        } else {
-            if (combine[pos].numbers.indexOf(v.address.number) === -1) combine[pos].numbers.push(v.address.number)
+    let combine: { postcode: string, numbers: string[] }[] = []
+    if (result) {
+        for (let v of result) {
+            let pos = combine.map( address => address.postcode).indexOf(v.address.postcode)
+            if (pos === -1) {
+                combine.push({postcode: v.address.postcode, numbers: [v.address.number]})
+            } else {
+                if (combine[pos].numbers.indexOf(v.address.number) === -1) combine[pos].numbers.push(v.address.number)
+            }
         }
     }
     return combine
 }
 
-export const orders = async (id) => {
+export const orders = async (id: string) => {
     return await mongoI.find<any>("Shop", {"id": {$regex: id, $options: "i"}})
 }
 
@@ -150,16 +170,16 @@ export const lastFifty = async () => {
     return await mongoI.find<any>("Shop", {}, {}, {$natural: -1}, 50)
 }
 
-export const returnOrRma = async (id, order) => {
+export const returnOrRma = async (id: string, order: tillServer.order) => {
     if (!order.linnid) return {status: 'done!'}
 
     const linnOrder = JSON.parse(await linn.getOrder(order.linnid))
 
     if (id.includes('RMA')) {
-        let rmaIndex = core.getPos(order.rmas, 'id', id)
+        let rmaIndex = order.rmas!.map(rma => rma.id).indexOf(id)
         let rmaItems = []
-        for (let item of order.rmas[rmaIndex].items) {
-            let pos = core.getPos(linnOrder.Items, 'SKU', item.SKU)
+        for (let item of order.rmas![rmaIndex].items) {
+            let pos = linnOrder.Items.map((item: { SKU: string; }) => item.SKU).indexOf(item.SKU)
             if (pos !== -1) {
                 let details = {
                     "SKU": item.SKU,
@@ -173,17 +193,17 @@ export const returnOrRma = async (id, order) => {
     }
 
     if (id.includes('RTN')) {
-        let returnIndex = core.getPos(order.returns, 'id', id)
+        let returnIndex = order.returns!.map(rma => rma.id).indexOf(id)
         let returnItems = []
-        for (let item of order.returns[returnIndex].items) {
-            let pos = core.getPos(linnOrder.Items, 'SKU', item.SKU)
+        for (let item of order.returns![returnIndex].items) {
+            let pos = linnOrder.Items.map((item: { SKU: string; }) => item.SKU).indexOf(item.SKU)
             if (pos !== -1) {
                 let details = {
                     "OrderItemRowId": linnOrder.Items[pos].RowId,
                     "RefundedUnit": 0,
                     "IsFreeText": false,
-                    "FreeTextOrNote": order.returns[returnIndex].reason,
-                    "Amount": order.returns[returnIndex].total,
+                    "FreeTextOrNote": order.returns![returnIndex].reason,
+                    "Amount": order.returns![returnIndex].total,
                     "Quantity": item.QTY,
                     "ReasonTag": "Shop Return"
                 }
@@ -196,7 +216,7 @@ export const returnOrRma = async (id, order) => {
     return {status: 'done!'}
 }
 
-export const getItemsForSearch = async (query) => {
+export const getItemsForSearch = async (query: { type: string, id: string }) => {
     let dbQuery
     let dbSort
 
@@ -234,15 +254,15 @@ export const getItemsForSearch = async (query) => {
         }
         dbSort = {[query.type]: 1}
     }
-    return await mongoI.find<any>("Items", dbQuery, dbProject, dbSort)
+    return await mongoI.find<item>("Items", dbQuery, dbProject, dbSort)
 }
 
-export const getItemForOrder = async (query) => {
+export const getItemForOrder = async (query: { type: string, id: string }) => {
     const dbQuery = query.type === "EAN"
         ? {[query.type]: {$regex: query.id, $options: "i"}}
         : {[query.type]: {$eq: query.id}};
 
-    return await mongoI.findOne("Items", dbQuery, {
+    return await mongoI.findOne<item>("Items", dbQuery, {
         "SKU": 1,
         "LINNID": 1,
         "EAN": 1,
@@ -256,29 +276,29 @@ export const getItemForOrder = async (query) => {
 
 // Till order transfer
 
-export const exportOrder = async (order) => {
+export const exportOrder = async (order: tillServer.order) => {
     return await mongoI.setData("Till-Export", {id: 1}, {id: 1, order: order})
 }
 
 export const importOrder = async () => {
-    const result = await mongoI.findOne("Till-Export", {id: 1})
-    return result.order
+    const result = await mongoI.findOne<{ id: number, order: tillServer.order }>("Till-Export", {id: 1})
+    return result!.order
 }
 
-export const rewardCard = async (query, barcode) => {
+export const rewardCard = async (query: object, barcode: string) => {
     if (barcode.startsWith("QSGIFT")) {
-        const result = await mongoI.findOne("Shop-Giftcard", query)
+        const result = await mongoI.findOne<giftCard>("Shop-Giftcard", query)
         if (result) {
             return (result)
         } else {
-            let card = {id: query.id.$eq, active: false}
+            let card = {id: barcode, active: false}
             await mongoI.setData("Shop-Giftcard", query, card)
             return (card);
         }
     }
 }
 
-export const updateRewardCard = async (card) => {
+export const updateRewardCard = async (card: giftCard) => {
     if (!card.id || card.id === "") return
     if (card.id.startsWith("QSGIFT")) {
         if (!card.amount) {
@@ -294,22 +314,22 @@ export const updateRewardCard = async (card) => {
 
 export const cashUp = async () => {
 
-    function createCashString(orders) {
+    function createCashString(orders: tillServer.order[]) {
         let cashUp = []
         for (let order of orders) {
             if (order.transaction.type === "CASH" || order.transaction.type === "SPLIT") {
-                let pos = core.getPos(cashUp, "id", order["till"])
-                let amount
-                if (order.transaction.type === "CASH") amount = parseFloat(order.transaction.amount)
-                if (order.transaction.type === "SPLIT") amount = parseFloat(order.transaction.cash)
+                let pos = cashUp.map( till => till.id ).indexOf( order.till )
+                let amount = 0
+                if (order.transaction.type === "CASH") amount = parseFloat(order.transaction.amount ??= "0")
+                if (order.transaction.type === "SPLIT") amount = order.transaction.cash ??= 0
                 if (pos === -1) {
-                    cashUp.push({id: order["till"], total: amount})
+                    cashUp.push({id: order.till, total: amount})
                 } else {
                     cashUp[pos].total += amount
                 }
             }
         }
-        core.sortData("id", cashUp)
+        cashUp.sort((a, b) => a.id > b.id ? 1 : b.id > a.id ? -1 : 0)
         return cashUp
     }
 
@@ -328,8 +348,8 @@ export const cashUp = async () => {
             $lt: (yesterday.setHours(22)).toString()
         }
     }
-    const todayOrders = await mongoI.find<any>("Shop", todayQuery)
-    const yesterdayOrders = await mongoI.find<any>("Shop", yesterdayQuery)
+    const todayOrders = await mongoI.find<tillServer.order>("Shop", todayQuery) as tillServer.order[]
+    const yesterdayOrders = await mongoI.find<tillServer.order>("Shop", yesterdayQuery) as tillServer.order[]
 
     return {today: createCashString(todayOrders), yesterday: createCashString(yesterdayOrders)}
 }

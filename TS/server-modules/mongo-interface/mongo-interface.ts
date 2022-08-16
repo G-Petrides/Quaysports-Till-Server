@@ -23,9 +23,7 @@ export const setData = async (collection:string, filter:object, data:object)=> {
     const client = await connect()
     try {
         const db = client.db(config.dbName);
-        const result = await db.collection(collection).updateOne(filter, {$set: data}, {upsert: true})
-        console.log(`${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`);
-        return result;
+        return await db.collection(collection).updateOne(filter, {$set: data}, {upsert: true});
     } catch (e) {
         console.error(e)
     } finally {

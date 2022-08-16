@@ -1,287 +1,1031 @@
-POST https://192.168.1.200:4430/Shop/CashUp
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{}
-
-<> 2022-08-10T133823.200.json
-
-###
-
-POST https://192.168.1.200:4430/Shop/CashUp
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{}
-
-<> 2022-08-10T133723.403.txt
-
-###
-
-POST https://localhost/Shop/CashUp
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{}
-
-<> 2022-07-27T141009.200.json
-
-###
-
-POST https://localhost/Shop/Import
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
 {
-
-}
-
-<> 2022-07-27T140956.200.json
-
-###
-
-POST https://localhost/Shop/Export
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{
-  "id": "QSSHOP0000282",
-  "address": {
-    "number": "11",
-    "postcode": "EX31 2DL"
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
   },
+  "id": "QSSHOP0013400",
+  "address": {},
+  "discountReason": "",
   "flatDiscount": "0.0",
-  "grandTotal": 7.49,
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
   "order": [
     {
-      "_id": "60c318db04910154ea821534",
-      "EAN": "5060509814572",
-      "SKU": "M21058",
-      "LINNID": "1b219ee2-d88b-455a-991e-9daf92334f33",
-      "TITLE": "Dedicated Base Mix Cork Dust Wafters 14MM Essential Cell",
-      "SHOPPRICEINCVAT": 7.49,
-      "QSPRICEINCVAT": 7.29,
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
       "QTY": 1,
-      "PRICE": 7.49,
-      "TOTAL": 7.49,
-      "isReturned": true,
-      "returnQty": 1,
-      "PURCHASEPRICE": 4.05
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
     }
   ],
-  "paid": false,
+  "paid": "true",
   "perDiscount": "0.0",
   "perDiscountAmount": "0.0",
-  "processedBy": "Chris",
-  "total": 7.49
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
 }
-
-<> 2022-07-27T140930.200.json
 
 ###
 
-POST https://localhost/Shop/Export
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
 {
-  "id": "QSSHOP0000282",
-  "address": {
-    "number": "11",
-    "postcode": "EX31 2DL"
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
   },
+  "id": "QSSHOP0013400",
+  "address": {},
+  "discountReason": "",
   "flatDiscount": "0.0",
-  "grandTotal": 7.49,
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
   "order": [
     {
-      "_id": "60c318db04910154ea821534",
-      "EAN": "5060509814572",
-      "SKU": "M21058",
-      "LINNID": "1b219ee2-d88b-455a-991e-9daf92334f33",
-      "TITLE": "Dedicated Base Mix Cork Dust Wafters 14MM Essential Cell",
-      "SHOPPRICEINCVAT": 7.49,
-      "QSPRICEINCVAT": 7.29,
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
       "QTY": 1,
-      "PRICE": 7.49,
-      "TOTAL": 7.49,
-      "isReturned": true,
-      "returnQty": 1,
-      "PURCHASEPRICE": 4.05
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
     }
   ],
-  "paid": false,
+  "paid": "true",
   "perDiscount": "0.0",
   "perDiscountAmount": "0.0",
-  "processedBy": "Chris",
-  "total": 7.49,
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
 }
 
-<> 2022-07-27T140908.400.html
-
 ###
 
-POST https://localhost/Shop/LastFiftyOrders
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{}
-
-<> 2022-07-27T140805.200.json
-
-###
-
-POST https://localhost/Shop/Orders
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{"QUERY":"287"}
-
-<> 2022-07-27T140748.200.json
-
-###
-
-POST https://localhost/Shop/Orders
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{"QUERY":"287"}
-
-<> 2022-07-27T140712.200.json
-
-###
-
-POST https://localhost/Shop/Orders
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{"QUERY":"QSSHOP0000287"}
-
-<> 2022-07-27T140620.200.json
-
-###
-
-POST https://localhost/Shop/Orders
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{"QUERY":"QSSHOP0007000"}
-
-<> 2022-07-27T104541.200.json
-
-###
-
-POST https://localhost/Shop/Orders
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{"QUERY":5000}
-
-<> 2022-07-27T104519.200.json
-
-###
-
-POST https://localhost/Shop/Orders
-Content-Type: application/json
-token: 75e0b3b2-7530-11ec-90d6-0242ac120003
-
-{"QUERY":274}
-
-<> 2022-07-27T104421.200.json
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013400",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
 ###
 
-POST https://localhost/Shop/Orders
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{"QUERY":274}
-
-<> 2022-07-27T104402.200.json
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013400",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
 ###
 
-POST https://localhost/Shop/Orders
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{"QUERY":"274"}
-
-<> 2022-07-27T104353.200.json
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013400",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
 ###
 
-POST https://localhost/Shop/Orders
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{"QUERY":"QSSHOP0000274"}
-
-<> 2022-07-27T104231.200.json
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013400",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
 ###
 
-POST https://localhost/Shop/Orders
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{"QUERY":"Orders"}
-
-<> 2022-07-27T104222.200.json
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013400",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
 ###
 
-POST https://localhost/Shop/Orders
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{"QUERY":"Orders"}
-
-<> 2022-07-27T104156.200.json
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013400",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
 ###
 
-POST https://localhost/Shop/Postcodes
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{"QUERY":"EX32"}
-
-<> 2022-07-27T104115.200.json
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013400",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
 ###
 
-POST https://localhost/Shop/Postcodes
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{"QUERY":"EX32"}
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013399",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
-<> 2022-07-27T103857.200.json
+<> 2022-08-16T114628.200.json
 
 ###
 
-POST https://localhost/Shop/Count
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{}
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013399",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
-<> 2022-07-27T103810.200.json
+<> 2022-08-16T114207.200.json
 
 ###
 
-POST https://localhost/Shop/Count
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{}
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013399",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
 
-<> 2022-07-27T103717.200.json
+<> 2022-08-16T114127.200.json
 
 ###
 
-POST https://localhost/Shop/Count
+POST https://192.168.1.120:4430/Shop/Test
 Content-Type: application/json
 token: 75e0b3b2-7530-11ec-90d6-0242ac120003
 
-{}
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013399",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
+
+<> 2022-08-16T113952.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/Test
+Content-Type: application/json
+token: 75e0b3b2-7530-11ec-90d6-0242ac120003
+
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013399",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
+
+<> 2022-08-16T113640.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/Test
+Content-Type: application/json
+token: 75e0b3b2-7530-11ec-90d6-0242ac120003
+
+{
+  "_id": {
+    "$oid": "62fb72e74a773e8ee130b440"
+  },
+  "id": "QSSHOP0013399",
+  "address": {},
+  "discountReason": "",
+  "flatDiscount": "0.0",
+  "giftCardDiscount": "0.0",
+  "grandTotal": "897.0",
+  "order": [
+    {
+      "_id": "62f3be55ba55d215110d8424",
+      "SKU": "TEST-ITEM3",
+      "LINNID": "a21003af-165f-42e8-b177-ad59dbb45bc3",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25,
+      "STOCKTOTAL": 1
+    },
+    {
+      "_id": "62f3be37ba55d215110d82a9",
+      "SKU": "TEST-ITEM2",
+      "LINNID": "05904aa0-e6c6-4b74-a918-80060d8b6e8f",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    },
+    {
+      "_id": "6166d58683888478adcf0b45",
+      "EAN": "50607678610590",
+      "SKU": "TEST-ITEM",
+      "LINNID": "501025f0-12e0-4cbc-a2bc-858baa15934d",
+      "TITLE": "TEST ITEM - DO NOT DELETE!!!!",
+      "SHOPPRICEINCVAT": 299,
+      "QTY": 1,
+      "PRICE": 299,
+      "TOTAL": 299,
+      "PURCHASEPRICE": 25
+    }
+  ],
+  "paid": "true",
+  "perDiscount": "0.0",
+  "perDiscountAmount": "0.0",
+  "processedBy": "Geoff",
+  "till": "Till x",
+  "total": "897.0",
+  "transaction": {
+    "type": "CASH",
+    "cash": 900,
+    "change": 3,
+    "amount": "897.0",
+    "date": "1660646123528"
+  }
+}
+
+###
+
+

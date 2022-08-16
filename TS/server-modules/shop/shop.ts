@@ -20,6 +20,19 @@ interface giftCard {
     amount?: number
 }
 
+interface stockError {
+    TITLE?: string
+    SKU: string
+    CHECKED: boolean
+    QTY: number
+    PRIORITY: boolean
+}
+
+interface stockReport {
+    SKU: string,
+    QTY: string,
+}
+
 export const get = async (query: object) => {
     return await mongoI.find<tillServer.order>("Shop", query)
 }
@@ -29,118 +42,75 @@ export const count = async () => {
     return result ? Number(result.id.substring(6, result.id.length)) + 1 : 1;
 }
 
-export const update = async (order: tillServer.order, loc = "Shop") => {
+export const update = async (order: tillServer.order) => {
     if (order._id !== undefined) delete order._id
-    if (order.paid === 'true') await linnOrder(order, loc)
+    if (order.paid === 'true') await adjustStock(order)
     return await mongoI.setData("Shop", {id: order.id}, order)
 }
 
-export const linnOrder = async (order: tillServer.order, loc = "Default") => {
+export const adjustStock = async (order: tillServer.order) => {
+    let stockData = []
 
-    const linnLocation = new Map([
-        ["Default", "00000000-0000-0000-0000-000000000000"],
-        ["Shop", "bcee8b08-5fc5-4694-9400-4d489d977186"]
-    ])
-    let date = new Date()
+    let skuSet = new Set(order.order.map(item => item.SKU))
+    let skuString = ""
+    for (let sku of skuSet) skuString += skuString === "" ? `'${sku}'` : `,'${sku}'`
 
-    let itemsCheck = false
+    let query = `SELECT si.ItemNumber AS SKU,
+                        sl.Quantity   AS QTY
+                 FROM [StockItem] si
+                     INNER JOIN [StockLevel] sl
+                 on si.pkStockItemId = sl.fkStockItemId
+                 WHERE sl.fkStockLocationId = '00000000-0000-0000-0000-000000000000'
+                   AND si.bLogicalDelete = 0
+                   AND si.ItemNumber IN (${skuString})
+                 GROUP BY si.ItemNumber, sl.Quantity`
+    let stockLevels = JSON.parse(await linn.getLinnQuery(query)).Results as stockReport[]
+    let stockMap = new Map(stockLevels!.map(info => [info.SKU, parseInt(info.QTY)]))
+
+
     for (let item of order.order) {
-        if (item.LINNID && item.LINNID !== "") {
-            itemsCheck = true
+        let details = null
+
+        if (!item.LINNID || item.LINNID === "" || !stockMap.has(item.SKU)) continue;
+        details = {
+            "SKU": item.SKU,
+            "LocationId": "00000000-0000-0000-0000-000000000000",
+            "Level": -item.QTY
         }
+
+        if ((stockMap.get(item.SKU)! -item.QTY) <= 0) {
+            let stockError: stockError = {
+                CHECKED: false,
+                PRIORITY: true,
+                QTY: 0,
+                SKU: item.SKU,
+                TITLE: item.TITLE
+            }
+            if ((stockMap.get(item.SKU)! - item.QTY) === 0) stockError.PRIORITY = false
+            await mongoI.setData("Shop-Stock-Report", {SKU: item.SKU}, stockError)
+        }
+
+        if (details) stockData.push(details)
     }
 
-    if (!order.linnid && itemsCheck) {
-        const newOrder = JSON.parse(await linn.createNewOrder())
+    const processResult = JSON.parse(await linn.adjustStock(stockData, order.id))
 
-        for (let item of order.order) {
-            if (item.LINNID && item.LINNID !== "") {
-                let details = {"PricePerUnit": item.PRICE, "TaxInclusive": true}
-                let string = `orderId=${newOrder.OrderId}&itemId=${item.LINNID}&channelSKU=${item.SKU}&fulfilmentCenter=${linnLocation.get(loc)}&quantity=${item.QTY}&linePricing=${JSON.stringify(details)}`
-                await linn.addItemToOrder(string)
-            }
-        }
-
-        let noteData = {
-            "OrderId": newOrder.OrderId,
-            "NoteDate": date,
-            "Internal": true,
-            "Note": "Shop Order: " + order.id,
-            "CreatedBy": "Shop"
-        }
-        await linn.setOrderNotes(`orderId=${newOrder.OrderId}&orderNotes=[${JSON.stringify(noteData)}]`)
-
-        let addressInfo = {
-            ChannelBuyerName: order.id,
-            Address: {
-                FullName: order.id,
-                Company: "",
-                Address1: order.address?.number ? order.address.number : "Unit 13",
-                Address2: "",
-                Address3: "",
-                Town: "",
-                Region: "",
-                PostCode: order.address?.postcode ? order.address.postcode : "EX31 3NJ",
-                Country: "United Kingdom",
-                PhoneNumber: order.address?.phone ? order.address.phone : "",
-                EmailAddress: order.address?.email ? order.address.email : ""
-            },
-            BillingAddress: {
-                FullName: order.id,
-                Company: "",
-                Address1: order.address?.number ? order.address.number : "Unit 13",
-                Address2: "",
-                Address3: "",
-                Town: "",
-                Region: "",
-                PostCode: order.address?.postcode ? order.address.postcode : "EX31 3NJ",
-                Country: "United Kingdom",
-                PhoneNumber: order.address?.phone ? order.address.phone : "",
-                EmailAddress: order.address?.email ? order.address.email : ""
-            }
-        }
-        await linn.setOrderCustomerInfo(`orderId=${newOrder.OrderId}&info=${JSON.stringify(addressInfo)}&saveToCrm=false`)
-
-        let generalInfo = {
-            "Status": 1,
-            "LabelPrinted": true,
-            "InvoicePrinted": true,
-            "IsRuleRun": true,
-            "IsParked": false,
-            "Identifiers": [
-                {
-                    "IdentifierId": 1,
-                    "IsCustom": true,
-                    "Tag": order.id,
-                    "Name": "Order ID"
-                }
-            ],
-            "ReferenceNum": order.id,
-            "ExternalReferenceNum": order.id,
-            "ReceivedDate": date,
-            "Source": "Shop",
-            "SubSource": "Quaysports",
-            "DespatchByDate": date,
-            "HasScheduledDelivery": false,
-            "Location": linnLocation.get(loc),
-        }
-        await linn.setOrderGeneralInfo(`orderId=${newOrder.OrderId}&info=${JSON.stringify(generalInfo)}&wasDraft=false`)
-
-        const processResult = JSON.parse(await linn.processOrder(newOrder.OrderId, loc))
-
-        order.linnid = newOrder.OrderId
-
-        if (processResult.Processed === true) {
-            order.linnstatus = processResult
-            await mongoI.setData("Shop", {id: order.id}, order)
-        } else {
-            order.linnstatus = JSON.parse(await linn.processOrder(newOrder.OrderId, "Default"))
-            await mongoI.setData("Shop", {id: order.id}, order)
-        }
-
-    } else {
-        console.log("Linn order exists!")
+    let processed = true
+    let processedMsg = ""
+    for (let result of processResult) {
+        processedMsg = result.LastUpdateOperation
+        if (result.PendingUpdate) processed = false
     }
+
+    order.linnstatus = {
+        Message: processedMsg,
+        OrderId: order.id,
+        Processed: processed.toString()
+    }
+    if(order._id) delete order._id
+    await mongoI.setData("Shop", {id: order.id}, order)
+
+    return
 }
 
 export const postcodes = async (id: string) => {
@@ -151,7 +121,7 @@ export const postcodes = async (id: string) => {
     let combine: { postcode: string, numbers: string[] }[] = []
     if (result) {
         for (let v of result) {
-            let pos = combine.map( address => address.postcode).indexOf(v.address.postcode)
+            let pos = combine.map(address => address.postcode).indexOf(v.address.postcode)
             if (pos === -1) {
                 combine.push({postcode: v.address.postcode, numbers: [v.address.number]})
             } else {
@@ -274,8 +244,6 @@ export const getItemForOrder = async (query: { type: string, id: string }) => {
     })
 }
 
-// Till order transfer
-
 export const exportOrder = async (order: tillServer.order) => {
     return await mongoI.setData("Till-Export", {id: 1}, {id: 1, order: order})
 }
@@ -318,7 +286,7 @@ export const cashUp = async () => {
         let cashUp = []
         for (let order of orders) {
             if (order.transaction.type === "CASH" || order.transaction.type === "SPLIT") {
-                let pos = cashUp.map( till => till.id ).indexOf( order.till )
+                let pos = cashUp.map(till => till.id).indexOf(order.till)
                 let amount = 0
                 if (order.transaction.type === "CASH") amount = parseFloat(order.transaction.amount ??= "0")
                 if (order.transaction.type === "SPLIT") amount = order.transaction.cash ??= 0
@@ -353,3 +321,5 @@ export const cashUp = async () => {
 
     return {today: createCashString(todayOrders), yesterday: createCashString(yesterdayOrders)}
 }
+
+

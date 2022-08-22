@@ -7,9 +7,11 @@ import {auth} from "./server-modules/linn-api/linn-auth";
 const config = require("./config/config.json")
 
 import {NextFunction, Request, Response} from "express";
+import * as path from "path";
 
 const app = express();
 app.all('*', ensureSecure)
+app.use("/images", express.static(path.join(__dirname, "../images")));
 app.disable('x-powered-by')
 
 const privateKey = fs.readFileSync('./config/ucc.key', 'utf8');
@@ -24,8 +26,18 @@ server.listen(4430, async () => {
 });
 
 function ensureSecure(req: Request, res: Response, next: NextFunction) {
-    if (req.secure) return next();
-    res.redirect('https://' + req.headers.host)
+    if (req.url.startsWith("/images/")) {
+        const filePath = path.join(__dirname, "..", req.url)
+        fs.existsSync(filePath)
+            ? res.sendFile(filePath)
+            : res.status(404).send('Image not found');
+    } else {
+        if (req.secure) {
+            return next()
+        } else {
+            res.redirect('https://' + req.headers.host)
+        }
+    }
 }
 
 

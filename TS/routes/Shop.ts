@@ -4,7 +4,7 @@ import {log} from "../server-modules/log";
 
 let router = express.Router()
 
-router.post('Shop/Get', async (req, res) => {
+router.post('/Get', async (req, res) => {
     res.set('Content-Type', 'application/json');
     res.send(await shop.get(req.body.QUERY));
 })

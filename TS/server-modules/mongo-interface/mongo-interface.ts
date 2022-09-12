@@ -54,4 +54,3 @@ export const findOne = async <T>(collection:string, filter = {}, projection = {}
         await client.close()
     }
 }
-

@@ -9,6 +9,11 @@ router.post('/Get', async (req, res) => {
     res.send(await shop.get(req.body.QUERY));
 })
 
+router.post('/GetQuickLinks', async (req, res) => {
+    res.set('Content-Type', 'application/json');
+    res.send(await shop.getQuickLinks());
+})
+
 router.post('/ItemsForSearch', async (req, res) => {
     res.set('Content-Type', 'application/json');
     res.send(await shop.getItemsForSearch(req.body.QUERY));

@@ -37,6 +37,10 @@ export const get = async (query: object) => {
     return await mongoI.find<tillServer.order>("Shop", query)
 }
 
+export const getQuickLinks = async ()=>{
+    return await mongoI.find<object>("Shop-Till-QuickLinks")
+}
+
 export const count = async () => {
     let result = await mongoI.findOne<tillServer.order>("Shop", {}, {}, {_id: -1}, 1)
     return result ? Number(result.id.substring(6, result.id.length)) + 1 : 1;
@@ -321,5 +325,3 @@ export const cashUp = async () => {
 
     return {today: createCashString(todayOrders), yesterday: createCashString(yesterdayOrders)}
 }
-
-

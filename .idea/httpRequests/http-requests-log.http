@@ -4,6 +4,116 @@ token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
 
 {}
 
+<> 2022-09-27T084854.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T084542.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T084459.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T084356.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T084101.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T084016.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T084014.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T084008.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T083837.200.json
+
+###
+
+POST https://192.168.1.120:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T083739.200.json
+
+###
+
+POST https://192.168.1.200:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
+<> 2022-09-27T083727.200.json
+
+###
+
+POST https://192.168.1.200:4430/Shop/GetQuickLinks
+Content-Type: application/json
+token: 9b9983e5-30ae-4581-bdc1-3050f8ae91cc
+
+{}
+
 <> 2022-09-08T133743.200.json
 
 ###

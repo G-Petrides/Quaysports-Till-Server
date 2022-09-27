@@ -38,7 +38,37 @@ export const get = async (query: object) => {
 }
 
 export const getQuickLinks = async ()=>{
-    return await mongoI.find<object>("Shop-Till-QuickLinks")
+    const query = [
+        {
+            '$match': {}
+        }, {
+            '$lookup': {
+                'from': 'Items',
+                'let': {
+                    'sku': '$links.SKU'
+                },
+                'pipeline': [
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$in': [
+                                    '$SKU', '$$sku'
+                                ]
+                            }
+                        }
+                    }, {
+                        '$project': {
+                            'SKU': 1,
+                            'SHOPPRICEINCVAT': 1,
+                            'TITLE': 1
+                        }
+                    }
+                ],
+                'as': 'links'
+            }
+        }
+    ]
+    return await mongoI.findAggregate<object>("Shop-Till-QuickLinks", query)
 }
 
 export const count = async () => {

@@ -54,3 +54,15 @@ export const findOne = async <T>(collection:string, filter = {}, projection = {}
         await client.close()
     }
 }
+
+export const findAggregate = async <T>(collection: string, aggregate: object[]) => {
+    const client = await connect()
+    try {
+        const db = client.db(process.env.DB_NAME);
+        return await db.collection(collection).aggregate<T>(aggregate, {serializeFunctions:true}).toArray()
+    } catch (e) {
+        console.error(e)
+    } finally {
+        await client.close()
+    }
+}

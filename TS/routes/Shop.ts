@@ -11,7 +11,8 @@ router.post('/Get', async (req, res) => {
 
 router.post('/GetQuickLinks', async (req, res) => {
     res.set('Content-Type', 'application/json');
-    res.send(await shop.getQuickLinks());
+    let result = await shop.getQuickLinks()
+    res.send(result);
 })
 
 router.post('/ItemsForSearch', async (req, res) => {

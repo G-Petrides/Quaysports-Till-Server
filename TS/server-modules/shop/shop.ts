@@ -33,6 +33,18 @@ interface stockReport {
     QTY: string,
 }
 
+export const binarySearch = function <T>(arr:T[], key:keyof T, x:T[keyof T], start = 0, end = arr.length):T | null {
+
+    if (start > end || arr.length === 0 || !x) return null;
+
+    let mid = Math.floor((start + end) / 2);
+    if (arr[mid][key] === x) return arr[mid];
+
+    return arr[mid][key] > x
+        ? binarySearch(arr, key, x, start, mid - 1)
+        : binarySearch(arr, key, x, mid + 1, end);
+}
+
 export const get = async (query: object) => {
     return await mongoI.find<tillServer.order>("Shop", query)
 }
@@ -62,13 +74,31 @@ export const getQuickLinks = async ()=>{
                             'SHOPPRICEINCVAT': 1,
                             'TITLE': 1
                         }
+                    },
+                    {
+                        '$sort': {
+                            'SKU': 1
+                        }
                     }
                 ],
-                'as': 'links'
+                'as': 'updates'
             }
         }
     ]
-    return await mongoI.findAggregate<object>("Shop-Till-QuickLinks", query)
+    interface QuickLinks { _id:string, id:string, links:QuickLinkItem[], updates?:QuickLinkItem[] }
+    interface QuickLinkItem { SKU:string | null,TITLE?:string,SHOPPRICEINCVAT?:string }
+
+    let result = await mongoI.findAggregate<QuickLinks>("Shop-Till-QuickLinks", query)
+    if(!result) return result
+    for (let quickLinks of result) {
+        for (let index in quickLinks.links) {
+            if(!quickLinks.links[index].SKU || !quickLinks.updates) continue
+            let search = binarySearch<QuickLinkItem>(quickLinks.updates!, "SKU", quickLinks.links[index].SKU)
+            if (search) quickLinks.links[index] = search
+        }
+        delete quickLinks.updates
+    }
+    return result
 }
 
 export const count = async () => {

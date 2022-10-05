@@ -94,7 +94,7 @@ export const getQuickLinks = async ()=>{
         for (let index in quickLinks.links) {
             if(!quickLinks.links[index].SKU || !quickLinks.updates) continue
             let search = binarySearch<QuickLinkItem>(quickLinks.updates!, "SKU", quickLinks.links[index].SKU)
-            if (search) quickLinks.links[index] = search
+            if (search) quickLinks.links[index] = {...quickLinks.links[index],...search}
         }
         delete quickLinks.updates
     }

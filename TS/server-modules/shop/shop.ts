@@ -262,7 +262,7 @@ export const getItemsForSearch = async (query: { type: string, id: string }) => 
         "SHOPPRICEINCVAT": 1,
         "PURCHASEPRICE": 1,
         "STOCKTOTAL": 1,
-        //"SHELFLOCATION": 1
+        "SHELFLOCATION": 1
     }
 
     if (query.type === "TITLE") {

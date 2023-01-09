@@ -262,6 +262,7 @@ export const getItemsForSearch = async (query: { type: string, id: string }) => 
         "SHOPPRICEINCVAT": 1,
         "PURCHASEPRICE": 1,
         "STOCKTOTAL": 1,
+        "SHOPDISCOUNT": 1,
         "SHELFLOCATION": 1
     }
 
@@ -306,6 +307,7 @@ export const getItemForOrder = async (query: { type: string, id: string }) => {
         "SHOPPRICEINCVAT": 1,
         "PURCHASEPRICE": 1,
         "STOCKTOTAL": 1,
+        "SHOPDISCOUNT": 1,
         "SHELFLOCATION": 1
     })
 }

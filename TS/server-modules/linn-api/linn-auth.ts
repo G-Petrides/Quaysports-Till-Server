@@ -1,5 +1,5 @@
-import mongoI = require("../mongo-interface/mongo-interface")
 import https = require('https');
+import {findOne, setData} from "../mongo-interface/mongo-interface";
 
 let connectionDetails = {server:"", token:""}
 
@@ -33,7 +33,7 @@ const connectToLinnworksAndGetAuth = () => {
                 connectionDetails = {server: data['Server'].replace('https://', ''), token: data['Token']};
                 console.log('---- Linn Auth ----');
                 console.dir(connectionDetails);
-                await mongoI.setData("Server", {id: "Linnworks"}, {id: "Linnworks", details: connectionDetails});
+                await setData("Server", {id: "Linnworks"}, {id: "Linnworks", details: connectionDetails});
                 console.log('---- Linn Auth Saved ----');
                 resolve();
             });
@@ -51,7 +51,7 @@ const getLinnworksAuthDetailsFromDB = async () => {
             token:string
         }
     }
-    const result = await mongoI.findOne<linnworksDetails>("Server", {id: "Linnworks"})
+    const result = await findOne<linnworksDetails>("Server", {id: "Linnworks"})
     connectionDetails = result!.details
     return
 }

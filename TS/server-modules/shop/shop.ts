@@ -1,17 +1,10 @@
 import mongoI = require('../mongo-interface/mongo-interface');
 import linn = require("../linn-api/linn-api");
-import {tillServer} from "../../index";
+import {schema, till} from "../../index";
+import {UpdateResult} from "mongodb";
+import {find} from "../mongo-interface/mongo-interface";
 
-interface item {
-    SKU: string,
-    LINNID?: string,
-    EAN?: string,
-    TITLE?: string,
-    QSPRICEINCVAT?: string,
-    SHOPPRICEINCVAT?: number,
-    PURCHASEPRICE?: number,
-    STOCKTOTAL?: number
-}
+type item = Pick<schema.Item, "SKU" | "linnId" | "EAN" | "title" | "prices" | "stock">
 
 interface giftCard {
     _id?: string,
@@ -46,7 +39,7 @@ export const binarySearch = function <T>(arr:T[], key:keyof T, x:T[keyof T], sta
 }
 
 export const get = async (query: object) => {
-    return await mongoI.find<tillServer.order>("Shop", query)
+    return await mongoI.find<till.Order>("Till-Transactions", query)
 }
 
 export const getQuickLinks = async ()=>{
@@ -55,7 +48,7 @@ export const getQuickLinks = async ()=>{
             '$match': {}
         }, {
             '$lookup': {
-                'from': 'Items',
+                'from': 'New-Items',
                 'let': {
                     'sku': '$links.SKU'
                 },
@@ -71,8 +64,8 @@ export const getQuickLinks = async ()=>{
                     }, {
                         '$project': {
                             'SKU': 1,
-                            'SHOPPRICEINCVAT': 1,
-                            'TITLE': 1
+                            'prices': 1,
+                            'title': 1
                         }
                     },
                     {
@@ -86,7 +79,7 @@ export const getQuickLinks = async ()=>{
         }
     ]
     interface QuickLinks { _id:string, id:string, links:QuickLinkItem[], updates?:QuickLinkItem[] }
-    interface QuickLinkItem { SKU:string | null,TITLE?:string,SHOPPRICEINCVAT?:string }
+    interface QuickLinkItem { SKU:string | null,title?:string,prices?:string }
 
     let result = await mongoI.findAggregate<QuickLinks>("Shop-Till-QuickLinks", query)
     if(!result) return result
@@ -102,20 +95,48 @@ export const getQuickLinks = async ()=>{
 }
 
 export const count = async () => {
-    let result = await mongoI.findOne<tillServer.order>("Shop", {}, {}, {_id: -1}, 1)
+    let result = await mongoI.findOne<till.Order>("Till-Transactions", {}, {}, {_id: -1}, 1)
     return result ? Number(result.id.substring(6, result.id.length)) + 1 : 1;
 }
 
-export const update = async (order: tillServer.order) => {
+export const update = async (order: till.Order): Promise<UpdateResult | undefined> => {
     if (order._id !== undefined) delete order._id
-    if (order.paid === 'true') await adjustStock(order)
-    return await mongoI.setData("Shop", {id: order.id}, order)
+    if (order.paid && (!order.returns || order.returns.length === 0)) {
+        await adjustStock(order)
+        await calculateProfit(order)
+    }
+    return await mongoI.setData("Till-Transactions", {id: order.id}, order)
 }
 
-export const adjustStock = async (order: tillServer.order) => {
+const calculateProfit = async (order: till.Order) => {
+
+    let skus = order.items.map(item => item.SKU)
+
+    let dbItems = await find<Pick<schema.Item, "SKU" | "marginData">>(
+        "New-Items",
+        {SKU: {$in: skus}},
+        {SKU: 1, marginData: 1}
+    )
+    if(!dbItems) return
+
+    for(let item of order.items){
+        let dbItem = dbItems.find(findItem => findItem.SKU === item.SKU)
+        if(!dbItem) {
+            item.profitCalculated = false
+            continue
+        }
+        const profit = dbItem.marginData.shop.profit
+        order.profit = Math.round(profit)
+        order.profitWithLoss = Math.round(profit - order.percentageDiscountAmount - order.flatDiscount)
+        item.profitCalculated = true
+    }
+
+}
+
+export const adjustStock = async (order: till.Order) => {
     let stockData = []
 
-    let skuSet = new Set(order.order.map(item => item.SKU))
+    let skuSet = new Set(order.items.map(item => item.SKU))
     let skuString = ""
     for (let sku of skuSet) skuString += skuString === "" ? `'${sku}'` : `,'${sku}'`
 
@@ -132,33 +153,35 @@ export const adjustStock = async (order: tillServer.order) => {
     let stockMap = new Map(stockLevels!.map(info => [info.SKU, parseInt(info.QTY)]))
 
 
-    for (let item of order.order) {
+    for (let item of order.items) {
         let details = null
 
-        if (!item.LINNID || item.LINNID === "" || !stockMap.has(item.SKU)) continue;
+        if (!item.linnId || item.linnId === "" || !stockMap.has(item.SKU)) continue;
         details = {
             "SKU": item.SKU,
             "LocationId": "00000000-0000-0000-0000-000000000000",
-            "Level": -item.QTY
+            "Level": -item.quantity
         }
 
-        if ((stockMap.get(item.SKU)! -item.QTY) <= 0) {
+        if ((stockMap.get(item.SKU)! -item.quantity) <= 0) {
             let stockError: stockError = {
                 CHECKED: false,
                 PRIORITY: true,
                 QTY: 0,
                 SKU: item.SKU,
-                TITLE: item.TITLE
+                TITLE: item.title
             }
-            if ((stockMap.get(item.SKU)! - item.QTY) === 0) stockError.PRIORITY = false
+            if ((stockMap.get(item.SKU)! - item.quantity) === 0) stockError.PRIORITY = false
             await mongoI.setData("Shop-Stock-Report", {SKU: item.SKU}, stockError)
         }
 
         if (details) stockData.push(details)
     }
 
-    const processResult = JSON.parse(await linn.adjustStock(stockData, order.id))
+    console.dir(stockData,{depth: 5})
 
+    const processResult = JSON.parse(await linn.adjustStock(stockData, order.id))
+    console.dir(processResult,{depth: 5})
     let processed = true
     let processedMsg = ""
     for (let result of processResult) {
@@ -167,19 +190,20 @@ export const adjustStock = async (order: tillServer.order) => {
     }
 
     order.linnstatus = {
+        Error:"",
         Message: processedMsg,
         OrderId: order.id,
         Processed: processed.toString()
     }
     if(order._id) delete order._id
-    await mongoI.setData("Shop", {id: order.id}, order)
+    await mongoI.setData("Till-Transactions", {id: order.id}, order)
 
     return
 }
 
 export const postcodes = async (id: string) => {
 
-    const result = await mongoI.find<tillServer.order>("Shop", {"address.postcode": {$regex: id, $options: "i"}},
+    const result = await mongoI.find<till.Order>("Till-Transactions", {"address.postcode": {$regex: id, $options: "i"}},
         {address: 1})
 
     let combine: { postcode: string, numbers: string[] }[] = []
@@ -197,57 +221,15 @@ export const postcodes = async (id: string) => {
 }
 
 export const orders = async (id: string) => {
-    return await mongoI.find<any>("Shop", {"id": {$regex: id, $options: "i"}})
+    return await mongoI.find<any>("Till-Transactions", {"id": {$regex: id, $options: "i"}})
+}
+
+export const mask = async (id: string) => {
+    return await mongoI.find<any>("Till-Transactions", {"transaction.mask": {$regex: id, $options: "i"}})
 }
 
 export const lastFifty = async () => {
-    return await mongoI.find<any>("Shop", {}, {}, {$natural: -1}, 50)
-}
-
-export const returnOrRma = async (id: string, order: tillServer.order) => {
-    if (!order.linnid) return {status: 'done!'}
-
-    const linnOrder = JSON.parse(await linn.getOrder(order.linnid))
-
-    if (id.includes('RMA')) {
-        let rmaIndex = order.rmas!.map(rma => rma.id).indexOf(id)
-        let rmaItems = []
-        for (let item of order.rmas![rmaIndex].items) {
-            let pos = linnOrder.Items.map((item: { SKU: string; }) => item.SKU).indexOf(item.SKU)
-            if (pos !== -1) {
-                let details = {
-                    "SKU": item.SKU,
-                    "LocationId": "00000000-0000-0000-0000-000000000000",
-                    "Level": 0 - item.QTY
-                }
-                rmaItems.push(details)
-            }
-        }
-        return await linn.createRma(rmaItems)
-    }
-
-    if (id.includes('RTN')) {
-        let returnIndex = order.returns!.map(rma => rma.id).indexOf(id)
-        let returnItems = []
-        for (let item of order.returns![returnIndex].items) {
-            let pos = linnOrder.Items.map((item: { SKU: string; }) => item.SKU).indexOf(item.SKU)
-            if (pos !== -1) {
-                let details = {
-                    "OrderItemRowId": linnOrder.Items[pos].RowId,
-                    "RefundedUnit": 0,
-                    "IsFreeText": false,
-                    "FreeTextOrNote": order.returns![returnIndex].reason,
-                    "Amount": order.returns![returnIndex].total,
-                    "Quantity": item.QTY,
-                    "ReasonTag": "Shop Return"
-                }
-                returnItems.push(details)
-            }
-        }
-        return await linn.createReturn(order.linnid, returnItems)
-    }
-
-    return {status: 'done!'}
+    return await mongoI.find<any>("Till-Transactions", {}, {}, {$natural: -1}, 50)
 }
 
 export const getItemsForSearch = async (query: { type: string, id: string }) => {
@@ -256,26 +238,25 @@ export const getItemsForSearch = async (query: { type: string, id: string }) => 
 
     let dbProject: any = {
         "SKU": 1,
-        "LINNID": 1,
+        "linnId": 1,
         "EAN": 1,
-        "TITLE": 1,
-        "SHOPPRICEINCVAT": 1,
-        "PURCHASEPRICE": 1,
-        "STOCKTOTAL": 1,
-        "SHOPDISCOUNT": 1,
-        "SHELFLOCATION": 1
+        "title": 1,
+        "prices": 1,
+        "stock": 1,
+        "discounts": 1,
+        "shelfLocation": 1
     }
 
     if (query.type === "TITLE") {
         dbQuery = {
             $and: [{
                 $or: [{$text: {$search: query.id}}, {
-                    TITLE: {
+                    title: {
                         $regex: query.id,
                         $options: "i"
                     }
                 }]
-            }, {LISTINGVARIATION: {$eq: false}}, {TILLFILTER: {$ne: "true"}}]
+            }, {isListingVariation: {$eq: false}}, {tags: {$nin: ["filtered"]}}]
         }
         dbProject.score = {$meta: "textScore"}
         dbSort = {score: {$meta: "textScore"}}
@@ -286,11 +267,13 @@ export const getItemsForSearch = async (query: { type: string, id: string }) => 
                     $regex: query.id,
                     $options: "i"
                 }
-            }, {LISTINGVARIATION: {$eq: false}}, {TILLFILTER: {$ne: "true"}}]
+            }, {isListingVariation: {$eq: false}}, {tags: {$nin: ["filtered"]}}]
         }
         dbSort = {[query.type]: 1}
     }
-    return await mongoI.find<item>("Items", dbQuery, dbProject, dbSort)
+    console.dir(dbQuery,{depth: 5})
+    console.dir(dbProject,{depth: 5})
+    return await mongoI.find<schema.Item>("New-Items", dbQuery, dbProject, dbSort)
 }
 
 export const getItemForOrder = async (query: { type: string, id: string }) => {
@@ -300,35 +283,33 @@ export const getItemForOrder = async (query: { type: string, id: string }) => {
 
     return await mongoI.findOne<item>("Items", dbQuery, {
         "SKU": 1,
-        "LINNID": 1,
+        "linnId": 1,
         "EAN": 1,
-        "TITLE": 1,
-        "QSPRICEINCVAT": 1,
-        "SHOPPRICEINCVAT": 1,
-        "PURCHASEPRICE": 1,
-        "STOCKTOTAL": 1,
-        "SHOPDISCOUNT": 1,
-        "SHELFLOCATION": 1
+        "title": 1,
+        "prices": 1,
+        "stock": 1,
+        "discounts": 1,
+        "shelfLocation": 1
     })
 }
 
-export const exportOrder = async (order: tillServer.order) => {
+export const exportOrder = async (order: till.Order) => {
     return await mongoI.setData("Till-Export", {id: 1}, {id: 1, order: order})
 }
 
 export const importOrder = async () => {
-    const result = await mongoI.findOne<{ id: number, order: tillServer.order }>("Till-Export", {id: 1})
+    const result = await mongoI.findOne<{ id: number, order: till.Order }>("Till-Export", {id: 1})
     return result!.order
 }
 
 export const rewardCard = async (query: object, barcode: string) => {
     if (barcode.startsWith("QSGIFT")) {
-        const result = await mongoI.findOne<giftCard>("Shop-Giftcard", query)
+        const result = await mongoI.findOne<giftCard>("New-Giftcards", query)
         if (result) {
             return (result)
         } else {
             let card = {id: barcode, active: false}
-            await mongoI.setData("Shop-Giftcard", query, card)
+            await mongoI.setData("New-Giftcards", query, card)
             return (card);
         }
     }
@@ -344,19 +325,19 @@ export const updateRewardCard = async (card: giftCard) => {
             card.active = true
         }
         if (card._id) delete card._id
-        return await mongoI.setData("Shop-Giftcard", {id: card.id}, card)
+        return await mongoI.setData("New-Giftcards", {id: card.id}, card)
     }
 }
 
 export const cashUp = async () => {
 
-    function createCashString(orders: tillServer.order[]) {
+    function createCashString(orders: till.Order[]) {
         let cashUp = []
         for (let order of orders) {
             if (order.transaction.type === "CASH" || order.transaction.type === "SPLIT") {
                 let pos = cashUp.map(till => till.id).indexOf(order.till)
                 let amount = 0
-                if (order.transaction.type === "CASH") amount = parseFloat(order.transaction.amount ??= "0")
+                if (order.transaction.type === "CASH") amount = order.transaction.amount ??= 0
                 if (order.transaction.type === "SPLIT") amount = order.transaction.cash ??= 0
                 if (pos === -1) {
                     cashUp.push({id: order.till, total: amount})
@@ -384,8 +365,8 @@ export const cashUp = async () => {
             $lt: (yesterday.setHours(22)).toString()
         }
     }
-    const todayOrders = await mongoI.find<tillServer.order>("Shop", todayQuery) as tillServer.order[]
-    const yesterdayOrders = await mongoI.find<tillServer.order>("Shop", yesterdayQuery) as tillServer.order[]
+    const todayOrders = await mongoI.find<till.Order>("Till-Transactions", todayQuery) as till.Order[]
+    const yesterdayOrders = await mongoI.find<till.Order>("Till-Transactions", yesterdayQuery) as till.Order[]
 
     return {today: createCashString(todayOrders), yesterday: createCashString(yesterdayOrders)}
 }

@@ -35,6 +35,6 @@ export const createReturn = async (orderId: string, arr: any) => {
 export const adjustStock = async (arr: any, id: string) => {
     return await postReq(
         '/api/Stock/UpdateStockLevelsBySKU',
-        `stockLevels=${JSON.stringify(arr)}&changeSource=Shop Checkout Stock Change - ${id}`
+        `stockLevels=${encodeURIComponent(JSON.stringify(arr))}&changeSource=Shop Checkout Stock Change - ${id}`
     )
 }

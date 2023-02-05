@@ -31,11 +31,11 @@ export const setData = async (collection:string, filter:object, data:object)=> {
     }
 }
 
-export const find = async <T>(collection:string, filter = {}, projection = {}, sort = {}, limit = 10000)=> {
+export const find = async <T>(collection:string, filter = {}, projection = {}, sort = {}, limit = 10000):Promise<T[] | undefined> => {
     const client = await connect()
     try {
         const db = client.db(config.dbName);
-        return await (db.collection(collection).find<T>(filter).project(projection).limit(limit).sort(sort).toArray())
+        return await (db.collection(collection).find<T>(filter).project(projection).limit(limit).sort(sort).toArray()) as T[]
     } catch (e) {
         console.error(e)
     } finally {

@@ -17,7 +17,9 @@ router.post('/GetQuickLinks', async (req, res) => {
 
 router.post('/ItemsForSearch', async (req, res) => {
     res.set('Content-Type', 'application/json');
-    res.send(await shop.getItemsForSearch(req.body.QUERY));
+    let data = await shop.getItemsForSearch(req.body.QUERY)
+    console.dir(data,{depth: 5})
+    res.send(data);
 })
 
 router.post('/ItemForOrder', async (req, res) => {
@@ -58,15 +60,14 @@ router.post('/Orders', async (req, res) => {
     res.send(await shop.orders(req.body.QUERY));
 })
 
+router.post('/Mask', async (req, res) => {
+    res.set('Content-Type', 'application/json');
+    res.send(await shop.mask(req.body.QUERY));
+})
+
 router.post('/LastFiftyOrders', async (req, res) => {
     res.set('Content-Type', 'application/json');
     res.send(await shop.lastFifty());
-})
-
-router.post('/ReturnOrRMA', async (req, res) => {
-    res.set('Content-Type', 'application/json');
-    log("Shop/ReturnOrRMA",req.body)
-    res.send(await shop.returnOrRma(req.body.QUERY, req.body.DATA));
 })
 
 router.post('/Export', async (req, res) => {

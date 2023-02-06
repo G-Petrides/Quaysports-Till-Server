@@ -50,7 +50,7 @@ export const getQuickLinks = async ()=>{
             '$lookup': {
                 'from': 'New-Items',
                 'let': {
-                    'sku': '$links.SKU'
+                    'sku': '$links'
                 },
                 'pipeline': [
                     {
@@ -65,7 +65,8 @@ export const getQuickLinks = async ()=>{
                         '$project': {
                             'SKU': 1,
                             'prices': 1,
-                            'title': 1
+                            'title': 1,
+                            'till':1
                         }
                     },
                     {
@@ -74,24 +75,14 @@ export const getQuickLinks = async ()=>{
                         }
                     }
                 ],
-                'as': 'updates'
+                'as': 'data'
             }
         }
     ]
-    interface QuickLinks { _id:string, id:string, links:QuickLinkItem[], updates?:QuickLinkItem[] }
-    interface QuickLinkItem { SKU:string | null,title?:string,prices?:string }
+    interface QuickLinks { _id:string, id:string, links:QuickLinkItem[], data:QuickLinkItem[] }
+    type QuickLinkItem = Pick<schema.Item, "SKU" | "title" | "prices" | "till">
 
-    let result = await mongoI.findAggregate<QuickLinks>("Shop-Till-QuickLinks", query)
-    if(!result) return result
-    for (let quickLinks of result) {
-        for (let index in quickLinks.links) {
-            if(!quickLinks.links[index].SKU || !quickLinks.updates) continue
-            let search = binarySearch<QuickLinkItem>(quickLinks.updates!, "SKU", quickLinks.links[index].SKU)
-            if (search) quickLinks.links[index] = {...quickLinks.links[index],...search}
-        }
-        delete quickLinks.updates
-    }
-    return result
+    return await mongoI.findAggregate<QuickLinks>("Till-QuickLinks", query)
 }
 
 export const count = async () => {

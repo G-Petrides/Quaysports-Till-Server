@@ -297,6 +297,7 @@ declare namespace schema {
         //move items from IDBFILTER into tags
         tags: string[]
         brandLabel: BrandLabel
+        till: {color:string}
     }
 }
 

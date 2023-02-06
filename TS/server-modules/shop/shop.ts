@@ -281,7 +281,7 @@ export const getItemForOrder = async (query: { type: string, id: string }) => {
         ? {[query.type]: {$regex: query.id, $options: "i"}}
         : {[query.type]: {$eq: query.id}};
 
-    return await mongoI.findOne<item>("Items", dbQuery, {
+    return await mongoI.findOne<item>("New-Items", dbQuery, {
         "SKU": 1,
         "linnId": 1,
         "EAN": 1,

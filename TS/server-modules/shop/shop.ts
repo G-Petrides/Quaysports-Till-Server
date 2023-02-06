@@ -118,8 +118,12 @@ const calculateProfit = async (order: till.Order) => {
             continue
         }
         const profit = dbItem.marginData.shop.profit
+        console.log("item: ",item.SKU)
+        console.log("profit: ",profit)
         order.profit += Math.round(profit)
+        console.log("order.profit: ",order.profit)
         order.profitWithLoss += Math.round(profit - order.percentageDiscountAmount - order.flatDiscount)
+        console.log("order.profitWithLoss: ",order.profitWithLoss)
         item.profitCalculated = true
     }
 

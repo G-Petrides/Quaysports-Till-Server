@@ -93,9 +93,10 @@ export const count = async () => {
 export const update = async (order: till.Order): Promise<UpdateResult | undefined> => {
     if (order._id !== undefined) delete order._id
     if (order.paid && (!order.returns || order.returns.length === 0)) {
-        await adjustStock(order)
         await calculateProfit(order)
+        await adjustStock(order)
     }
+
     return await mongoI.setData("Till-Transactions", {id: order.id}, order)
 }
 
@@ -186,10 +187,6 @@ export const adjustStock = async (order: till.Order) => {
         OrderId: order.id,
         Processed: processed.toString()
     }
-    if(order._id) delete order._id
-    await mongoI.setData("Till-Transactions", {id: order.id}, order)
-
-    return
 }
 
 export const postcodes = async (id: string) => {

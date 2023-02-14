@@ -1,10 +1,11 @@
-import https = require('https');
-import LinnAuth  = require('./linn-auth')
+import https from 'https';
+import {getAuthDetails} from "./linn-auth";
+
 export const agent = new https.Agent();
 agent.maxSockets = 10;
 
 const postOpts = (path: string) => {
-    let serverDetails = LinnAuth.getAuthDetails()
+    let serverDetails = getAuthDetails()
     return {
         hostname: serverDetails.server,
         method: 'POST',

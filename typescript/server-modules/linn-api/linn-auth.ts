@@ -1,4 +1,4 @@
-import https = require('https');
+import https from 'https';
 import {findOne, setData} from "../mongo-interface/mongo-interface";
 
 let connectionDetails = {server:"", token:""}

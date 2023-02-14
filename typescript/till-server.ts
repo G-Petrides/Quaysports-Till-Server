@@ -1,13 +1,13 @@
-import fs = require('fs');
-import express = require('express');
-import https = require('https');
-
-import mongoI = require('./server-modules/mongo-interface/mongo-interface')
+import fs from 'fs';
+import express from 'express';
+import https from 'https';
 import {auth} from "./server-modules/linn-api/linn-auth";
-const config = require("./config/config.json")
-
 import {NextFunction, Request, Response} from "express";
-import * as path from "path";
+import path from "path";
+import {ping} from "./server-modules/mongo-interface/mongo-interface";
+import itemRouter from "./routes/Items";
+import userRouter from "./routes/Users";
+import shopRouter from "./routes/Shop";
 
 const app = express();
 app.all('*', ensureSecure)
@@ -54,18 +54,7 @@ const startSever = async () => {
         extended: true
     }));
 
-    const RateLimit = require('express-rate-limit');
-
-    const limiter = new RateLimit({
-        windowMs: 60 * 1000, // 1 minutes
-        max: 600, // limit each IP to 60 requests per windowMs
-        delayMs: 0 // disable delaying - full speed until the max limit is reached
-    });
-
-    //  apply to all requests
-    app.use(limiter);
-
-    const allowedOrigins = ["https://192.168.1.200:4430","https://192.168.1.120:4430"];
+    const allowedOrigins = ["https://192.168.1.200:4430", "https://192.168.1.120:4430"];
     app.use(function (req, res, next) {
         const origin = "https://" + req.headers.host;
         if (allowedOrigins.includes(origin)) {
@@ -86,29 +75,21 @@ const startSever = async () => {
         next();
     });
 
-    //check for cookie
     app.use((req, res, next) => {
-        if (req.headers.token) {
-            if (config.tokens[(req.headers.token.toString())]) {
-                next()
-            } else {
-                res.sendStatus(403)
-            }
+        if (process.env.ANDROIDTOKEN === req.headers?.token) {
+            next()
+        } else {
+            res.sendStatus(403)
         }
     })
 
     // System ping
     app.post('/Ping', async (req, res) => {
-        res.send(await mongoI.ping())
+        res.send(await ping())
     });
 
-    const ItemsRoutes = require('./routes/Items.js')
-    app.use('/Items/', ItemsRoutes)
-
-    const shopRoutes = require('./routes/Shop.js')
-    app.use('/Shop/', shopRoutes)
-
-    const userRoutes = require('./routes/Users.js')
-    app.use('/Users/', userRoutes)
+    app.use('/Items/', itemRouter)
+    app.use('/Shop/', shopRouter)
+    app.use('/Users/', userRouter)
 
 }

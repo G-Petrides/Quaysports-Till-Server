@@ -1,8 +1,7 @@
-import mongoI = require('../mongo-interface/mongo-interface');
-import linn = require("../linn-api/linn-api");
 import {schema, till} from "../../index";
 import {UpdateResult} from "mongodb";
-import {find} from "../mongo-interface/mongo-interface";
+import {find, findAggregate, findOne, setData} from "../mongo-interface/mongo-interface";
+import {adjustLinnStock, getLinnQuery} from "../linn-api/linn-api";
 
 type item = Pick<schema.Item, "SKU" | "linnId" | "EAN" | "title" | "prices" | "stock">
 
@@ -39,7 +38,7 @@ export const binarySearch = function <T>(arr:T[], key:keyof T, x:T[keyof T], sta
 }
 
 export const get = async (query: object) => {
-    return await mongoI.find<till.Order>("Till-Transactions", query)
+    return await find<till.Order>("Till-Transactions", query)
 }
 
 export const getQuickLinks = async ()=>{
@@ -82,11 +81,11 @@ export const getQuickLinks = async ()=>{
     interface QuickLinks { _id:string, id:string, links:QuickLinkItem[], data:QuickLinkItem[] }
     type QuickLinkItem = Pick<schema.Item, "SKU" | "title" | "prices" | "till">
 
-    return await mongoI.findAggregate<QuickLinks>("Till-QuickLinks", query)
+    return await findAggregate<QuickLinks>("Till-QuickLinks", query)
 }
 
 export const count = async () => {
-    let result = await mongoI.findOne<till.Order>("Till-Transactions", {}, {}, {_id: -1}, 1)
+    let result = await findOne<till.Order>("Till-Transactions", {}, {}, {_id: -1}, 1)
     return result ? Number(result.id.substring(6, result.id.length)) + 1 : 1;
 }
 
@@ -97,7 +96,7 @@ export const update = async (order: till.Order): Promise<UpdateResult | undefine
         await adjustStock(order)
     }
 
-    return await mongoI.setData("Till-Transactions", {id: order.id}, order)
+    return await setData("Till-Transactions", {id: order.id}, order)
 }
 
 const calculateProfit = async (order: till.Order) => {
@@ -144,7 +143,7 @@ export const adjustStock = async (order: till.Order) => {
                    AND si.bLogicalDelete = 0
                    AND si.ItemNumber IN (${skuString})
                  GROUP BY si.ItemNumber, sl.Quantity`
-    let stockLevels = JSON.parse(await linn.getLinnQuery(query)).Results as stockReport[]
+    let stockLevels = JSON.parse(await getLinnQuery(query)).Results as stockReport[]
     let stockMap = new Map(stockLevels!.map(info => [info.SKU, parseInt(info.QTY)]))
 
 
@@ -167,16 +166,14 @@ export const adjustStock = async (order: till.Order) => {
                 TITLE: item.title
             }
             if ((stockMap.get(item.SKU)! - item.quantity) === 0) stockError.PRIORITY = false
-            await mongoI.setData("Shop-Stock-Report", {SKU: item.SKU}, stockError)
+            await setData("Shop-Stock-Report", {SKU: item.SKU}, stockError)
         }
 
         if (details) stockData.push(details)
     }
 
-    console.dir(stockData,{depth: 5})
+    const processResult = JSON.parse(await adjustLinnStock(stockData, order.id))
 
-    const processResult = JSON.parse(await linn.adjustStock(stockData, order.id))
-    console.dir(processResult,{depth: 5})
     let processed = true
     let processedMsg = ""
     for (let result of processResult) {
@@ -194,7 +191,7 @@ export const adjustStock = async (order: till.Order) => {
 
 export const postcodes = async (id: string) => {
 
-    const result = await mongoI.find<till.Order>("Till-Transactions", {"address.postcode": {$regex: id, $options: "i"}},
+    const result = await find<till.Order>("Till-Transactions", {"address.postcode": {$regex: id, $options: "i"}},
         {address: 1})
 
     let combine: { postcode: string, numbers: string[] }[] = []
@@ -212,15 +209,15 @@ export const postcodes = async (id: string) => {
 }
 
 export const orders = async (id: string) => {
-    return await mongoI.find<any>("Till-Transactions", {"id": {$regex: id, $options: "i"}})
+    return await find<any>("Till-Transactions", {"id": {$regex: id, $options: "i"}})
 }
 
 export const mask = async (id: string) => {
-    return await mongoI.find<any>("Till-Transactions", {"transaction.mask": {$regex: id, $options: "i"}})
+    return await find<any>("Till-Transactions", {"transaction.mask": {$regex: id, $options: "i"}})
 }
 
 export const lastFifty = async () => {
-    return await mongoI.find<any>("Till-Transactions", {}, {}, {$natural: -1}, 50)
+    return await find<any>("Till-Transactions", {}, {}, {$natural: -1}, 50)
 }
 
 export const getItemsForSearch = async (query: { type: string, id: string }) => {
@@ -262,9 +259,8 @@ export const getItemsForSearch = async (query: { type: string, id: string }) => 
         }
         dbSort = {[query.type]: 1}
     }
-    console.dir(dbQuery,{depth: 5})
-    console.dir(dbProject,{depth: 5})
-    return await mongoI.find<schema.Item>("New-Items", dbQuery, dbProject, dbSort)
+
+    return await find<schema.Item>("New-Items", dbQuery, dbProject, dbSort)
 }
 
 export const getItemForOrder = async (query: { type: string, id: string }) => {
@@ -272,7 +268,7 @@ export const getItemForOrder = async (query: { type: string, id: string }) => {
         ? {[query.type]: {$regex: query.id, $options: "i"}}
         : {[query.type]: {$eq: query.id}};
 
-    return await mongoI.findOne<item>("New-Items", dbQuery, {
+    return await findOne<item>("New-Items", dbQuery, {
         "SKU": 1,
         "linnId": 1,
         "EAN": 1,
@@ -285,22 +281,22 @@ export const getItemForOrder = async (query: { type: string, id: string }) => {
 }
 
 export const exportOrder = async (order: till.Order) => {
-    return await mongoI.setData("Till-Export", {id: 1}, {id: 1, order: order})
+    return await setData("Till-Export", {id: 1}, {id: 1, order: order})
 }
 
 export const importOrder = async () => {
-    const result = await mongoI.findOne<{ id: number, order: till.Order }>("Till-Export", {id: 1})
+    const result = await findOne<{ id: number, order: till.Order }>("Till-Export", {id: 1})
     return result!.order
 }
 
 export const rewardCard = async (query: object, barcode: string) => {
     if (barcode.startsWith("QSGIFT")) {
-        const result = await mongoI.findOne<giftCard>("New-Giftcards", query)
+        const result = await findOne<giftCard>("New-Giftcards", query)
         if (result) {
             return (result)
         } else {
             let card = {id: barcode, active: false}
-            await mongoI.setData("New-Giftcards", query, card)
+            await setData("New-Giftcards", query, card)
             return (card);
         }
     }
@@ -316,7 +312,7 @@ export const updateRewardCard = async (card: giftCard) => {
             card.active = true
         }
         if (card._id) delete card._id
-        return await mongoI.setData("New-Giftcards", {id: card.id}, card)
+        return await setData("New-Giftcards", {id: card.id}, card)
     }
 }
 
@@ -356,8 +352,8 @@ export const cashUp = async () => {
             $lt: (yesterday.setHours(22)).toString()
         }
     }
-    const todayOrders = await mongoI.find<till.Order>("Till-Transactions", todayQuery) as till.Order[]
-    const yesterdayOrders = await mongoI.find<till.Order>("Till-Transactions", yesterdayQuery) as till.Order[]
+    const todayOrders = await find<till.Order>("Till-Transactions", todayQuery) as till.Order[]
+    const yesterdayOrders = await find<till.Order>("Till-Transactions", yesterdayQuery) as till.Order[]
 
     return {today: createCashString(todayOrders), yesterday: createCashString(yesterdayOrders)}
 }

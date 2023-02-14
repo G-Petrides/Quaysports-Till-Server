@@ -1,13 +1,19 @@
 "use strict";
-import mongoDB = require('mongodb');
-import config = require('../../config/config.json');
+import {MongoClient, Document} from 'mongodb';
 
-export const connect = async () => await new mongoDB.MongoClient(config.dbURL).connect()
+export const connect = async () => {
+    let url = process.env.DBURL
+    if (!url) {
+        console.error('No DBURL found in environment variables')
+        process.exit(1)
+    }
+    return await new MongoClient(url).connect()
+}
 
 export async function ping() {
     const client = await connect()
     try {
-        const db = client.db(config.dbName);
+        const db = client.db(process.env.DBNAME);
         const newPing = await db.command({ping: 1})
         return newPing.ok === 1 ? {status: 'Success'} : {status: 'Failure'}
     } catch (e) {
@@ -24,7 +30,7 @@ export async function setData(
 {
     const client = await connect()
     try {
-        const db = client.db(config.dbName);
+        const db = client.db(process.env.DBNAME);
         return await db.collection(collection)
             .updateOne(
                 filter,
@@ -38,7 +44,7 @@ export async function setData(
     }
 }
 
-export async function find<T extends mongoDB.Document>(
+export async function find<T extends Document>(
     collection: string,
     filter = {},
     projection = {},
@@ -48,7 +54,7 @@ export async function find<T extends mongoDB.Document>(
 {
     const client = await connect()
     try {
-        const db = client.db(config.dbName);
+        const db = client.db(process.env.DBNAME);
         return await db.collection<T>(collection)
             .find(filter)
             .project(projection)
@@ -72,7 +78,7 @@ export async function findOne<T>(
 {
     const client = await connect()
     try {
-        const db = client.db(config.dbName);
+        const db = client.db(process.env.DBNAME);
         return await db.collection(collection)
             .findOne<T>(
                 filter,
@@ -89,14 +95,14 @@ export async function findOne<T>(
     }
 }
 
-export async function findAggregate<T extends mongoDB.Document>(
+export async function findAggregate<T extends Document>(
     collection: string,
     aggregate: object[])
     : Promise<T[] | undefined>
 {
     const client = await connect()
     try {
-        const db = client.db(config.dbName);
+        const db = client.db(process.env.DBNAME);
         return await db.collection<T>(collection)
             .aggregate(aggregate, {serializeFunctions: true})
             .toArray() as T[]

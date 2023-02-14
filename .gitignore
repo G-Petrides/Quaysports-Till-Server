@@ -1,4 +1,6 @@
 /Server/
 /config/
-/TS/config/
+/typescript/config/
 /images/
+/dist/
+/node_modules/

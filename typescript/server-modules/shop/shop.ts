@@ -244,7 +244,7 @@ export const getItemsForSearch = async (query: { type: string, id: string }) => 
                         $options: "i"
                     }
                 }]
-            }, {isListingVariation: {$eq: false}}, {tags: {$nin: ["filtered"]}}]
+            }, {isListingVariation: {$eq: false}}, {tags: {$nin: ["filtered", "till filter"]}}]
         }
         dbProject.score = {$meta: "textScore"}
         dbSort = {score: {$meta: "textScore"}}
@@ -255,7 +255,7 @@ export const getItemsForSearch = async (query: { type: string, id: string }) => 
                     $regex: query.id,
                     $options: "i"
                 }
-            }, {isListingVariation: {$eq: false}}, {tags: {$nin: ["filtered"]}}]
+            }, {isListingVariation: {$eq: false}}, {tags: {$nin: ["filtered", "till filter"]}}]
         }
         dbSort = {[query.type]: 1}
     }

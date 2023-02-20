@@ -128,6 +128,7 @@ declare namespace schema {
         //map from STOCKVAL
         value: number
         //map from INVCHECKDATE
+        tradePack: number | undefined
     }
 
     export interface StockTake {

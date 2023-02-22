@@ -119,12 +119,10 @@ const calculateProfit = async (order: till.Order) => {
             item.profitCalculated = false
             continue
         }
-        const profit = dbItem.marginData.shop.profit
-        order.profit += Math.round(profit)
-        order.profitWithLoss += Math.round(profit - order.percentageDiscountAmount - order.flatDiscount)
+        order.profit += Math.round(dbItem.marginData.shop.profit)
         item.profitCalculated = true
     }
-
+    order.profitWithLoss += Math.round(order.profit - (order.percentageDiscountAmount + order.flatDiscount))
 }
 
 export const adjustStock = async (order: till.Order) => {

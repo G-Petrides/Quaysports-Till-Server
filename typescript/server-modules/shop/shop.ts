@@ -148,7 +148,7 @@ export const adjustStock = async (order: till.Order) => {
     for (let item of order.items) {
         let details = null
 
-        if (!item.linnId || item.linnId === "" || !stockMap.has(item.SKU)) continue;
+        if (!stockMap.has(item.SKU)) continue;
         details = {
             "SKU": item.SKU,
             "LocationId": "00000000-0000-0000-0000-000000000000",

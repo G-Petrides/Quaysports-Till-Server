@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "webpack --config webpack.development.js --watch --progress --color",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "coverage": "jest --coverage",
     "build": "webpack --config webpack.production.js --progress --color"
   },

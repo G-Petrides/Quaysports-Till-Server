@@ -63,6 +63,8 @@ export const getQuickLinks = async ()=>{
                     }, {
                         '$project': {
                             'SKU': 1,
+                            'EAN':1,
+                            'linnId':1,
                             'prices': 1,
                             'title': 1,
                             'till':1

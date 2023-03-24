@@ -157,7 +157,7 @@ export const adjustStock = async (order: till.Order) => {
             "Level": -item.quantity
         }
 
-        if ((stockMap.get(item.SKU)! -item.quantity) <= 0) {
+        if ((stockMap.get(item.SKU)! -item.quantity) < 0) {
             let stockError: stockError = {
                 checked: false,
                 priority: true,
@@ -165,7 +165,6 @@ export const adjustStock = async (order: till.Order) => {
                 SKU: item.SKU,
                 title: item.title
             }
-            if ((stockMap.get(item.SKU)! - item.quantity) === 0) stockError.priority = false
             await setData("Shop-Stock-Report", {SKU: item.SKU}, stockError)
         }
 

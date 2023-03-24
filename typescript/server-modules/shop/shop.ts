@@ -13,11 +13,11 @@ interface giftCard {
 }
 
 interface stockError {
-    TITLE?: string
+    title?: string
     SKU: string
-    CHECKED: boolean
-    QTY: number
-    PRIORITY: boolean
+    checked: boolean
+    quantity: number
+    priority: boolean
 }
 
 interface stockReport {
@@ -159,13 +159,13 @@ export const adjustStock = async (order: till.Order) => {
 
         if ((stockMap.get(item.SKU)! -item.quantity) <= 0) {
             let stockError: stockError = {
-                CHECKED: false,
-                PRIORITY: true,
-                QTY: 0,
+                checked: false,
+                priority: true,
+                quantity: 0,
                 SKU: item.SKU,
-                TITLE: item.title
+                title: item.title
             }
-            if ((stockMap.get(item.SKU)! - item.quantity) === 0) stockError.PRIORITY = false
+            if ((stockMap.get(item.SKU)! - item.quantity) === 0) stockError.priority = false
             await setData("Shop-Stock-Report", {SKU: item.SKU}, stockError)
         }
 

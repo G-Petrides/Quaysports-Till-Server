@@ -95,8 +95,8 @@ export const update = async (order: till.Order): Promise<UpdateResult | undefine
     if (order._id !== undefined) delete order._id
     if (order.paid) {
         await calculateProfit(order)
+        await adjustStock(order)
     }    
-    await adjustStock(order)
     return await setData("Till-Transactions", {id: order.id}, order)
 }
 

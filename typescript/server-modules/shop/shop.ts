@@ -93,11 +93,10 @@ export const count = async () => {
 
 export const update = async (order: till.Order): Promise<UpdateResult | undefined> => {
     if (order._id !== undefined) delete order._id
-    if (order.paid && (!order.returns || order.returns.length === 0)) {
+    if (order.paid) {
         await calculateProfit(order)
         await adjustStock(order)
-    }
-
+    }    
     return await setData("Till-Transactions", {id: order.id}, order)
 }
 
@@ -115,16 +114,37 @@ const calculateProfit = async (order: till.Order) => {
     if(!order.profit) order.profit = 0
     if(!order.profitWithLoss) order.profitWithLoss = 0
 
+    let profitFromSales = 0;
+
     for(let item of order.items){
         let dbItem = dbItems.find(findItem => findItem.SKU === item.SKU)
         if(!dbItem) {
             item.profitCalculated = false
             continue
         }
-        order.profit += Math.round(dbItem.marginData.shop.profit)
-        item.profitCalculated = true
+
+    // Calculate profit for sold items
+    for (let index = 0; index < item.quantity; index++) {
+        profitFromSales += Math.round(dbItem.marginData.shop.profit);
+        item.profitCalculated = true;
     }
-    order.profitWithLoss += Math.round(order.profit - (order.percentageDiscountAmount + order.flatDiscount))
+
+    // Calculate profit for returned items
+    if (order.returns && order.returns.length > 0) {
+        const returnedItems = order.returns.flatMap(returnObj => returnObj.items);
+        const returnedItem = returnedItems.find(returned => returned.SKU === item.SKU);
+        if (returnedItem) {
+            for (let index = 0; index < returnedItem.returnQuantity; index++) {
+                profitFromSales -= Math.round(dbItem.marginData.shop.profit);
+            }
+        }
+    }
+}
+    // Calculate the overall profit (sales - returns)
+    order.profit = profitFromSales
+
+    // Calculate profit with discounts
+    order.profitWithLoss = Math.round(order.profit - (order.percentageDiscountAmount + order.flatDiscount));
 }
 
 export const adjustStock = async (order: till.Order) => {
@@ -146,15 +166,27 @@ export const adjustStock = async (order: till.Order) => {
     let stockLevels = JSON.parse(await getLinnQuery(query)).Results as stockReport[]
     let stockMap = new Map(stockLevels!.map(info => [info.SKU, parseInt(info.QTY)]))
 
-
     for (let item of order.items) {
         let details = null
 
         if (!stockMap.has(item.SKU)) continue;
-        details = {
-            "SKU": item.SKU,
-            "LocationId": "00000000-0000-0000-0000-000000000000",
-            "Level": -item.quantity
+
+        if (order.returns && order.returns.length > 0) {
+            const returnedItems = order.returns.flatMap(returnObj => returnObj.items);
+            const returnedItem = returnedItems.find(returned => returned.SKU === item.SKU);
+            if (returnedItem) {
+                details = {
+                "SKU": item.SKU,
+                "LocationId": "00000000-0000-0000-0000-000000000000",
+                "Level": returnedItem.returnQuantity
+                }
+            }
+        } else {
+            details = {
+                "SKU": item.SKU,
+                "LocationId": "00000000-0000-0000-0000-000000000000",
+                "Level": -item.quantity
+            }
         }
 
         if ((stockMap.get(item.SKU)! -item.quantity) < 0) {
@@ -170,7 +202,6 @@ export const adjustStock = async (order: till.Order) => {
 
         if (details) stockData.push(details)
     }
-
     const processResult = JSON.parse(await adjustLinnStock(stockData, order.id))
 
     let processed = true

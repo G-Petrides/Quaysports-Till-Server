@@ -262,7 +262,8 @@ export const getItemsForSearch = async (query: { type: string, id: string }) => 
         "prices": 1,
         "stock": 1,
         "discounts": 1,
-        "shelfLocation": 1
+        "shelfLocation": 1,
+        "tags": 1
     }
 
     if (query.type === "TITLE") {
@@ -306,7 +307,8 @@ export const getItemForOrder = async (query: { type: string, id: string }) => {
         "prices": 1,
         "stock": 1,
         "discounts": 1,
-        "shelfLocation": 1
+        "shelfLocation": 1,
+        "tags": 1
     })
 }
 

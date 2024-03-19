@@ -67,7 +67,8 @@ export const getQuickLinks = async ()=>{
                             'linnId':1,
                             'prices': 1,
                             'title': 1,
-                            'till':1
+                            'till':1,
+                            'tags': 1
                         }
                     },
                     {
